@@ -1,0 +1,22 @@
+---
+- name: SSH | Update the ssh security configuration (/etc/ssh/sshd_config)
+  template:
+    src: "{{ item }}"
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  with_items:
+    - etc_ssh_sshd_config.j2
+  notify:
+    - restart ssh
+
+- name: SSH | Ensure the SSH server keys are generated
+  command: ssh-keygen -A
+  args:
+    creates: "{{ item }}"
+  with_items:
+    - "/etc/ssh/ssh_host_rsa_key"
+    - "/etc/ssh/ssh_host_ecdsa_key"
+    - "/etc/ssh/ssh_host_ed25519_key"
